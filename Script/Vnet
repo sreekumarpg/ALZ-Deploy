@@ -1,5 +1,5 @@
-$ProductionSubscriptionId="8ab7be51-3eae-4adb-b5a0-9f2973e836e3"
-$NSPSubscriptionId="8ab7be51-3eae-4adb-b5a0-9f2973e836e3"
+$ProductionSubscriptionId="3c9c1064-981a-4042-8c21-6501f28b5a3e"
+$NSPSubscriptionId="937c48f1-57ca-4e67-b910-00c3c398db58"
 
 $ProductionResourcegroup="rg-upda-prod-01"
 $ProductionVNet="vnet-upda-prod-01"
