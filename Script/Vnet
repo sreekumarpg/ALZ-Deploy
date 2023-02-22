@@ -1,0 +1,91 @@
+$ProductionSubscriptionId="8ab7be51-3eae-4adb-b5a0-9f2973e836e3"
+$NSPSubscriptionId="8ab7be51-3eae-4adb-b5a0-9f2973e836e3"
+
+$ProductionResourcegroup="rg-upda-prod-01"
+$ProductionVNet="vnet-upda-prod-01"
+$ProductionAddressPrefix="10.191.72.0/21"
+$ProductionSubnet1="snet-upda-prod-identity-01"
+$ProductionSubnet1Prefix="10.191.72.0/24"
+$ProductionSubnet1NSG="nsg-upda-prod-identity-01"
+$ProductionSubnet2="snet-upda-prod-shared-01"
+$ProductionSubnet2Prefix="10.191.73.0/24"
+$ProductionSubnet2NSG="nsg-upda-prod-shared-01"
+$ProductionSubnet3="snet-upda-prod-lb-01"
+$ProductionSubnet3Prefix="10.191.74.0/24"
+$ProductionSubnet3NSG="nsg-upda-prod-lb-01"
+$ProductionSubnet4="snet-upda-prod-web-01"
+$ProductionSubnet4Prefix="10.191.75.0/24"
+$ProductionSubnet4NSG="nsg-upda-prod-web-01"
+$ProductionSubnet5="snet-upda-prod-app1-01"
+$ProductionSubnet5Prefix="10.191.76.0/24"
+$ProductionSubnet5NSG="nsg-upda-prod-app1-01"
+$ProductionSubnet6="snet-upda-prod-db-01"
+$ProductionSubnet6Prefix="10.191.77.0/24"
+$ProductionSubnet6NSG="nsg-upda-prod-db-01"
+
+$NSPResourcegroup="rg-upda-nsp-01"
+$NSPVNet="vnet-upda-nsp-01"
+$NSPAddressPrefix="10.191.249.128/26"
+$NSPSubnet1="snet-upda-nsp-01"
+$NSPSubnet1Prefix="10.191.249.128/28"
+$NSPSubnet1NSG="nsg-upda-nsp-01"
+$NSPSubnet2="snet-upda-nsp-02"
+$NSPSubnet2Prefix="10.191.249.144/28"
+$NSPSubnet2NSG="nsg-upda-nsp-02"
+
+$location="northeurope"
+
+Write-Host "Script started.It will need around 10 minutes to complete........." -ForegroundColor DarkYellow
+Set-Item -Path Env:\SuppressAzurePowerShellBreakingChangeWarnings -Value $true
+Set-Item -Path Env:\SuppressAzureRmModulesRetiringWarning -Value $true
+Start-Sleep -Seconds 5
+
+Write-Host "Starting the deployment of Resource Group.........." -ForegroundColor DarkGray
+
+Select-AzSubscription -SubscriptionId $ProductionSubscriptionId | Out-null
+New-AzResourceGroup -Name $ProductionResourcegroup -Location $location | Out-null
+
+Select-AzSubscription -SubscriptionId $NSPSubscriptionId | Out-null
+New-AzResourceGroup -Name $NSPResourcegroup -Location $location | Out-null
+
+Write-Host "Completed the deployment of Resource Groups" -ForegroundColor Green
+
+Start-Sleep -Seconds 5
+Write-Host "Starting the deployment of Production Virtual Network......." -ForegroundColor DarkGray
+
+Select-AzSubscription -SubscriptionId $ProductionSubscriptionId | Out-null
+$P_rule1 = New-AzNetworkSecurityRuleConfig -Name "Inbound_Any_Temp" -Description "Allow Inbound Temp Rule" -Access Allow -Protocol "*" -Direction Inbound -Priority 100 -SourceAddressPrefix "*" -SourcePortRange "*" -DestinationAddressPrefix "*" -DestinationPortRange "*"
+
+$ProductionSecurityGroup1 = New-AzNetworkSecurityGroup -ResourceGroupName $ProductionResourcegroup -Location $location -Name $ProductionSubnet1NSG -SecurityRules $P_rule1
+$ProductionSecurityGroup2 = New-AzNetworkSecurityGroup -ResourceGroupName $ProductionResourcegroup -Location $location -Name $ProductionSubnet2NSG -SecurityRules $P_rule1
+$ProductionSecurityGroup3 = New-AzNetworkSecurityGroup -ResourceGroupName $ProductionResourcegroup -Location $location -Name $ProductionSubnet3NSG -SecurityRules $P_rule1
+$ProductionSecurityGroup4 = New-AzNetworkSecurityGroup -ResourceGroupName $ProductionResourcegroup -Location $location -Name $ProductionSubnet4NSG -SecurityRules $P_rule1
+$ProductionSecurityGroup5 = New-AzNetworkSecurityGroup -ResourceGroupName $ProductionResourcegroup -Location $location -Name $ProductionSubnet5NSG -SecurityRules $P_rule1
+$ProductionSecurityGroup6 = New-AzNetworkSecurityGroup -ResourceGroupName $ProductionResourcegroup -Location $location -Name $ProductionSubnet6NSG -SecurityRules $P_rule1
+
+
+$P_Subnet1 = New-AzVirtualNetworkSubnetConfig -Name $ProductionSubnet1 -AddressPrefix $ProductionSubnet1Prefix -NetworkSecurityGroup $ProductionSecurityGroup1
+$P_Subnet2 = New-AzVirtualNetworkSubnetConfig -Name $ProductionSubnet2 -AddressPrefix $ProductionSubnet2Prefix -NetworkSecurityGroup $ProductionSecurityGroup2
+$P_Subnet3 = New-AzVirtualNetworkSubnetConfig -Name $ProductionSubnet3 -AddressPrefix $ProductionSubnet3Prefix -NetworkSecurityGroup $ProductionSecurityGroup3
+$P_Subnet4 = New-AzVirtualNetworkSubnetConfig -Name $ProductionSubnet4 -AddressPrefix $ProductionSubnet4Prefix -NetworkSecurityGroup $ProductionSecurityGroup4
+$P_Subnet5 = New-AzVirtualNetworkSubnetConfig -Name $ProductionSubnet5 -AddressPrefix $ProductionSubnet5Prefix -NetworkSecurityGroup $ProductionSecurityGroup5
+$P_Subnet6 = New-AzVirtualNetworkSubnetConfig -Name $ProductionSubnet6 -AddressPrefix $ProductionSubnet6Prefix -NetworkSecurityGroup $ProductionSecurityGroup6
+
+New-AzVirtualNetwork -Name $ProductionVNet -ResourceGroupName $ProductionResourcegroup -Location $location -AddressPrefix $ProductionAddressPrefix -Subnet $P_Subnet1, $P_Subnet2, $P_Subnet3, $P_Subnet4, $P_Subnet5, $P_Subnet6 | Out-null
+
+Write-Host "Completed the deployment of Production Virtual Network" -ForegroundColor Green
+
+Start-Sleep -Seconds 5
+Write-Host "Starting the deployment of NSP Virtual Network..........." -ForegroundColor DarkGray
+
+Select-AzSubscription -SubscriptionId $NSPSubscriptionId | Out-null
+$NSP_rule1 = New-AzNetworkSecurityRuleConfig -Name "Inbound_Any_Temp" -Description "Allow Inbound Temp Rule" -Access Allow -Protocol "*" -Direction Inbound -Priority 100 -SourceAddressPrefix "*" -SourcePortRange "*" -DestinationAddressPrefix "*" -DestinationPortRange "*"
+
+$NSPSecurityGroup1 = New-AzNetworkSecurityGroup -ResourceGroupName $NSPResourcegroup -Location $location -Name $NSPSubnet1NSG -SecurityRules $NSP_rule1
+$NSPSecurityGroup2 = New-AzNetworkSecurityGroup -ResourceGroupName $NSPResourcegroup -Location $location -Name $NSPSubnet2NSG -SecurityRules $NSP_rule1
+
+$NSP_Subnet1 = New-AzVirtualNetworkSubnetConfig -Name $NSPSubnet1 -AddressPrefix $NSPSubnet1Prefix -NetworkSecurityGroup $NSPSecurityGroup1
+$NSP_Subnet2 = New-AzVirtualNetworkSubnetConfig -Name $NSPSubnet2 -AddressPrefix $NSPSubnet2Prefix -NetworkSecurityGroup $NSPSecurityGroup2
+
+New-AzVirtualNetwork -Name $NSPVNet -ResourceGroupName $NSPResourcegroup -Location $location -AddressPrefix $NSPAddressPrefix -Subnet $NSP_Subnet1, $NSP_Subnet2 | Out-null
+Write-Host "Completed the deployment of NSP Network" -ForegroundColor Green
