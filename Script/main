@@ -1,39 +1,54 @@
+$RemoteProdSubscriptionId=""
+$RemoteProdVNet=""
+$RemoteProdResourcegroup=""
+$RemoteProdPeername=""
 
-
-Connect-AzAccount -SubscriptionId "[subscription ID]" -TenantId "[tenant ID]"
-Get-AzSubscription
-
-
-
-$RemoteProdSubscriptionId="cae48dfb-969c-4f68-85fe-5ca149e5004f"
-$RemoteProdVNet="
-$RemoteProdResourcegroup=
-$RemoteProdPeername=
+$RemoteNSPSubscriptionId=""
+$RemoteNSPVNet=""
+$RemoteNSPResourcegroup=""
+$RemoteNSPPeername=""
 
 
 $NetworkSubscriptionId="cae48dfb-969c-4f68-85fe-5ca149e5004f"
 $VWANResourcegroup="rg-iga-network-wvan-01"
 $VWANHubName="vhub-iga-network-01"
 
-
-Write-Host "Starting the deployment of Virtual Hub Peering..........." -ForegroundColor DarkYellow
+Write-Host "Starting the Peering of Production Network" $RemoteProdVNet ..........." -ForegroundColor DarkYellow
 Start-Sleep -Seconds 5
 Select-AzSubscription -SubscriptionId $RemoteProdSubscriptionId  | Out-null
 Start-Sleep -Seconds 5
-$remoteVirtualNetwork = Get-AzVirtualNetwork -Name $RemoteProdVNet -ResourceGroupName $RemoteProdResourcegroup 
-
+$RemoteProdVirtualNetwork = Get-AzVirtualNetwork -Name $RemoteProdVNet -ResourceGroupName $RemoteProdResourcegroup 
 
 Start-Sleep -Seconds 5
 Select-AzSubscription -SubscriptionId $NetworkSubscriptionId  | Out-null
 
+Start-Sleep -Seconds 5
+$Prt1 = Get-AzVHubRouteTable -ResourceGroupName $VWANResourcegroup -VirtualHubName $VWANHubName -Name "Spoke-RT"
+$Prt2 = Get-AzVHubRouteTable -ResourceGroupName $VWANResourcegroup -VirtualHubName $VWANHubName -Name "PAN-RT"
+$Proutingconfig = New-AzRoutingConfiguration -AssociatedRouteTable $Prt1.Id -Label @("Label") -Id @($Prt2.Id) 
 
 Start-Sleep -Seconds 5
-$rt1 = Get-AzVHubRouteTable -ResourceGroupName $VWANResourcegroup -VirtualHubName $VWANHubName -Name "Spoke-RT"
-$rt2 = Get-AzVHubRouteTable -ResourceGroupName $VWANResourcegroup -VirtualHubName $VWANHubName -Name "PAN-RT"
-$routingconfig = New-AzRoutingConfiguration -AssociatedRouteTable $rt1.Id -Label @("Label") -Id @($rt2.Id) 
-
-Start-Sleep -Seconds 5
-New-AzVirtualHubVnetConnection -ResourceGroupName $VWANResourcegroup -VirtualHubName $VWANHubName -Name $RemoteProdPeername -RemoteVirtualNetwork $remoteVirtualNetwork -RoutingConfiguration $routingconfig | Out-null
+New-AzVirtualHubVnetConnection -ResourceGroupName $VWANResourcegroup -VirtualHubName $VWANHubName -Name $RemoteProdPeername -RemoteVirtualNetwork $RemoteProdVirtualNetwork -RoutingConfiguration $Proutingconfig | Out-null
 
 Start-Sleep -Seconds 5
 Write-Host "Completed the VirtualHub Peering from" $RemoteProdPeername -ForegroundColor Green
+
+Write-Host "Starting the Peering of Production Network" $RemoteNSPVNet ..........." -ForegroundColor DarkYellow
+Start-Sleep -Seconds 5
+Select-AzSubscription -SubscriptionId $RemoteNSPSubscriptionId  | Out-null
+Start-Sleep -Seconds 5
+$RemoteNSPVirtualNetwork = Get-AzVirtualNetwork -Name $RemoteNSPVNet -ResourceGroupName $RemoteNSPResourcegroup 
+
+Start-Sleep -Seconds 5
+Select-AzSubscription -SubscriptionId $NetworkSubscriptionId  | Out-null
+
+Start-Sleep -Seconds 5
+$Nrt1 = Get-AzVHubRouteTable -ResourceGroupName $VWANResourcegroup -VirtualHubName $VWANHubName -Name "Spoke-RT"
+$Nrt2 = Get-AzVHubRouteTable -ResourceGroupName $VWANResourcegroup -VirtualHubName $VWANHubName -Name "PAN-RT"
+$Nroutingconfig = New-AzRoutingConfiguration -AssociatedRouteTable $Nrt1.Id -Label @("Label") -Id @($Nrt2.Id) 
+
+Start-Sleep -Seconds 5
+New-AzVirtualHubVnetConnection -ResourceGroupName $VWANResourcegroup -VirtualHubName $VWANHubName -Name $RemoteNSPPeername -RemoteVirtualNetwork $RemoteNSPVirtualNetwork -RoutingConfiguration $Nroutingconfig | Out-null
+
+Start-Sleep -Seconds 5
+Write-Host "Completed the VirtualHub Peering from" $RemoteNSPPeername -ForegroundColor Green
