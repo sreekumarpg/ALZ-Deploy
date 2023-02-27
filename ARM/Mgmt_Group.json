@@ -32,9 +32,8 @@
 	"variables": {
 		"enterpriseScaleManagementGroups": {
 			"platform": "Platform",
-			"landingZone": "LandingZone",
-			"Sandbox": "Sandbox"
-		}
+			"landingZone": "LandingZone"
+				}
 	},
 	"resources": [
 		{
