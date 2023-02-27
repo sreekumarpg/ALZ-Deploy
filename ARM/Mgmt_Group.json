@@ -1,5 +1,5 @@
 {
-	"$schema": "https://schema.management.azure.com/schemas/2019-08-01/tenantDeploymentTemplate.json#",
+	"$schema": "https://schema.management.azure.com/schemas/2019-08-01/managementGroupDeploymentTemplate.json#",
 	"contentVersion": "1.0.0.0",
 	"parameters": {
 		"topLevelManagementGroupName": {
@@ -11,9 +11,6 @@
 		"NameOfGroupsUnderPlatformGroup": {
 			"type": "array",
 			"defaultValue": [
-				"Network",
-				"Identity",
-				"Shared",
 				"Log"
 			],
 			"metadata": {
@@ -24,9 +21,8 @@
 			"type": "array",
 			"defaultValue": [
 				"Production",
-				"Staging",
-				"Testing",
-				"Development"
+				"NSP"
+
 			],
 			"metadata": {
 				"description": "These are the landing zone management groups."
@@ -85,24 +81,7 @@
 				}
 			}
 		},
-        {
-			// Create management group for Sandbox zones
-			"type": "Microsoft.Management/managementGroups",
-			"apiVersion": "2020-05-01",
-			"scope": "/",
-			"name": "Sanbox",
-			"dependsOn": [
-				"[tenantResourceId('Microsoft.Management/managementGroups/', parameters('topLevelManagementGroupName'))]"
-			],
-			"properties": {
-				"displayName": "Sandbox",
-				"details": {
-					"parent": {
-						"id": "[tenantResourceId('Microsoft.Management/managementGroups/', parameters('topLevelManagementGroupName'))]"
-					}
-				}
-			}
-		},
+       
 		{
 			// Create child management groups for platform resources
 			"condition": "[not(empty(parameters('NameOfGroupsUnderPlatformGroup')))]",
