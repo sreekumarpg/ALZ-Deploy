@@ -1,5 +1,5 @@
-$ProductionSubscriptionId="ba75a824-df76-4b90-b07d-71c5800dd383"
-$NSPSubscriptionId="857351c6-8c68-4016-a750-a585368cf827"
+$ProductionSubscriptionId="00a8d0b2-ffba-4da4-8915-21bbf92d9e15"
+$NSPSubscriptionId="cb6c0887-6982-4b40-8a63-7d1fe306e533"
 
 $ProductionResourcegroup="rg-bipa-prod-01"
 $ProductionVNet="vnet-bipa-prod-01"
@@ -24,14 +24,6 @@ $ProductionSubnet6Prefix="10.190.53.0/24"
 $ProductionSubnet6NSG="nsg-bipa-prod-db-01"
 
 $NSPResourcegroup="rg-bipa-nsp-01"
-$NSPVNet="vnet-bipa-nsp-01"
-$NSPAddressPrefix="10.191.150.0/23"
-$NSPSubnet1="snet-bipa-nsp-01"
-$NSPSubnet1Prefix="10.191.150.0/25"
-$NSPSubnet1NSG="nsg-bipa-nsp-01"
-$NSPSubnet2="snet-bipa-nsp-02"
-$NSPSubnet2Prefix="10.191.150.128/25"
-$NSPSubnet2NSG="nsg-bipa-nsp-02"
 
 $location="northeurope"
 
@@ -74,18 +66,3 @@ $P_Subnet6 = New-AzVirtualNetworkSubnetConfig -Name $ProductionSubnet6 -AddressP
 New-AzVirtualNetwork -Name $ProductionVNet -ResourceGroupName $ProductionResourcegroup -Location $location -AddressPrefix $ProductionAddressPrefix -Subnet $P_Subnet1, $P_Subnet2, $P_Subnet3, $P_Subnet4, $P_Subnet5, $P_Subnet6 | Out-null
 
 Write-Host "Completed the deployment of Production Virtual Network" -ForegroundColor Green
-
-Start-Sleep -Seconds 5
-Write-Host "Starting the deployment of NSP Virtual Network..........." -ForegroundColor DarkGray
-
-Select-AzSubscription -SubscriptionId $NSPSubscriptionId | Out-null
-$NSP_rule1 = New-AzNetworkSecurityRuleConfig -Name "Inbound_Any_Temp" -Description "Allow Inbound Temp Rule" -Access Allow -Protocol "*" -Direction Inbound -Priority 100 -SourceAddressPrefix "*" -SourcePortRange "*" -DestinationAddressPrefix "*" -DestinationPortRange "*"
-
-$NSPSecurityGroup1 = New-AzNetworkSecurityGroup -ResourceGroupName $NSPResourcegroup -Location $location -Name $NSPSubnet1NSG -SecurityRules $NSP_rule1
-$NSPSecurityGroup2 = New-AzNetworkSecurityGroup -ResourceGroupName $NSPResourcegroup -Location $location -Name $NSPSubnet2NSG -SecurityRules $NSP_rule1
-
-$NSP_Subnet1 = New-AzVirtualNetworkSubnetConfig -Name $NSPSubnet1 -AddressPrefix $NSPSubnet1Prefix -NetworkSecurityGroup $NSPSecurityGroup1
-$NSP_Subnet2 = New-AzVirtualNetworkSubnetConfig -Name $NSPSubnet2 -AddressPrefix $NSPSubnet2Prefix -NetworkSecurityGroup $NSPSecurityGroup2
-
-New-AzVirtualNetwork -Name $NSPVNet -ResourceGroupName $NSPResourcegroup -Location $location -AddressPrefix $NSPAddressPrefix -Subnet $NSP_Subnet1, $NSP_Subnet2 | Out-null
-Write-Host "Completed the deployment of NSP Network" -ForegroundColor Green
