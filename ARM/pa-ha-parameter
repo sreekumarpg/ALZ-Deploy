@@ -1,0 +1,132 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "VNETOption": {
+      "value": "Use existing VNET"
+    },
+    "VNETResourceGroup": {
+      "value": "rg-network-uaen-01"
+    },
+    "VNETName": {
+      "value": "vnet-network-uaen-01"
+    },
+    "VNETPrefix": {
+      "value": "10.8.16.0/20"
+    },
+    "subnetName-Management": {
+      "value": "snet-network-pa-mgmt"
+    },
+    "subnetName-Outside": {
+      "value": "snet-network-pa-out"
+    },
+    "subnetName-Inside": {
+      "value": "snet-network-pa-in"
+    },
+    "subnetName-HA": {
+      "value": "snet-network-pa-ha"
+    },
+    "subnetPrefix-Management": {
+      "value": "10.8.18.0/27"
+    },
+    "subnetPrefix-Outside": {
+      "value": "10.8.18.32/27"
+    },
+    "subnetPrefix-Inside": {
+      "value": "10.8.18.64/27"
+    },
+    "subnetPrefix-HA": {
+      "value": "10.8.18.96/27"
+    },
+    "FW1-Name": {
+      "value": "prbahazpa01"
+    },
+    "FW1-Zone": {
+      "value": "1"
+    },
+    "FW1-IPManagement": {
+      "value": "10.8.18.10"
+    },
+    "FW1-IPOutside": {
+      "value": "10.8.18.40"
+    },
+    "FW1-IPOutside-Floating": {
+      "value": "10.8.18.60"
+    },
+    "FW1-IPInside": {
+      "value": "10.8.18.70"
+    },
+    "FW1-IPInside-Floating": {
+      "value": "10.8.18.90"
+    },
+    "FW1-IP-HA": {
+      "value": "10.8.18.100"
+    },
+    "FW2-Name": {
+      "value": "prbahazpa02"
+    },
+    "FW2-Zone": {
+      "value": "2"
+    },
+    "FW2-IPManagement": {
+      "value": "10.8.18.20"
+    },
+    "FW2-IPOutside": {
+      "value": "10.8.18.50"
+    },
+    "FW2-IPInside": {
+      "value": "10.8.18.80"
+    },
+    "FW2-IP-HA": {
+      "value": "10.8.18.110"
+    },
+    "licenseType": {
+      "value": "byol"
+    },
+    "PANOSVersion": {
+      "value": "latest"
+    },
+    "VMSize": {
+      "value": "Standard_DS3_v2"
+    },
+    "OSDiskType": {
+      "value": "Premium_LRS"
+    },
+    "acceleratedNetworking": {
+      "value": "enable (Only supported on PAN-OS 9.0 or greater)"
+    },
+    "applyPublicIPToManagement": {
+      "value": "Yes"
+    },
+    "applyPublicIPToDataplane1": {
+      "value": "Yes"
+    },
+    "NSGName": {
+      "value": "nsg-network-pa"
+    },
+    "NSGSourcePrefix": {
+      "value": "0.0.0.0/0"
+    },
+    "username": {
+      "value": "netadmin"
+    },
+    "password": {
+      "value": "Qwerty@12345"
+    },
+    "optional-BootstrapStorageAccount": {
+      "value": null
+    },
+    "optional-BootstrapAccessKey": {
+      "value": null
+    },
+    "optional-BootstrapFileShareName": {
+      "value": null
+    },
+    "optional-BootstrapShareDirectory": {
+      "value": null
+    },
+    "optional-AppendStringToResources": {
+      "value": null
+    }
+  }
+}
